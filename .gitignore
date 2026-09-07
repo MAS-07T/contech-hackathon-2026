@@ -1,0 +1,9 @@
+# imagery is distributed via the shared drive, never via git
+data/track_a/panoramas/
+data/track_b/frames/
+*.zip
+
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
