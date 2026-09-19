@@ -15,11 +15,11 @@ import sys
 import zipfile
 from pathlib import Path
 
-FOLDER_URL = "https://drive.google.com/drive/folders/REPLACE_WHEN_PUBLISHED"
+FOLDER_URL = "https://drive.google.com/drive/folders/1T3W9n0vRo1DmCBntxJqQdoW1USr1lHuy"
 PACKS = {
-    # name: drive_file_id — filled when the packs are published
-    "track_a_panoramas.zip": "REPLACE_ID_A",
-    "track_b_frames.zip": "REPLACE_ID_B",
+    # name: (drive_file_id, expected_bytes)
+    "track_a_panoramas.zip": ("1nJ0pQ_wEpZv2dES9bjdulMl_foirVqyR", 309880401),
+    "track_b_frames.zip": ("14HlJhqf6PMJStdn4gHo7FEzHW4pfMXv_", 1987560419),
 }
 ALLOWED_PREFIXES = ("track_a/", "track_b/")
 
@@ -42,7 +42,7 @@ def main():
     here = Path(__file__).resolve().parent
 
     ok = True
-    for name, file_id in PACKS.items():
+    for name, (file_id, want_size) in PACKS.items():
         local = next((p for p in (here / name, Path(name), dest / name)
                       if p.exists()), None)
         if local is None:
@@ -54,6 +54,13 @@ def main():
                 ok = False
                 continue
             local = target
+        got = local.stat().st_size
+        if got != want_size:
+            print(f"  {name} is incomplete ({got} of {want_size} bytes) — "
+                  f"delete it and re-run, or download it in your browser: "
+                  f"{FOLDER_URL}")
+            ok = False
+            continue
         print(f"unpacking {local} ...")
         with zipfile.ZipFile(local) as z:
             bad = [n for n in z.namelist()
