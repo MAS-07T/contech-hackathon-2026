@@ -1,6 +1,6 @@
 # Prove It — Construction Progress Verification
 
-**Saudi ConTech September Hackathon · Dammam · Saturday 26 September 2026**
+**Saudi ConTech October Hackathon · Dammam · Saturday 10 October 2026**
 
 On every project, someone claims progress and someone else has to check it.
 Today that check is a person clicking through site imagery, hundreds of times
@@ -61,7 +61,7 @@ in [SUBMISSION.md](SUBMISSION.md).
    ```
 
 5. Submit by PR: `submissions/<TEAM_NAME>/submission.json` + your code, by
-   **17:00 on event day**.
+   **code freeze, 16:30 on event day**.
 
 ## Rules
 

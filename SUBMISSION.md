@@ -70,4 +70,4 @@ run it through your tool live. The authored answer is revealed right after.
 
 PR adding `submissions/<TEAM_NAME>/submission.json` (required) and your code
 (required for the winner, encouraged for all). The checker must pass.
-Deadline **17:00 event day**.
+Deadline: **code freeze, 16:30 on event day**.

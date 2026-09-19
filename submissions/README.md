@@ -7,4 +7,4 @@ submissions/<TEAM_NAME>/submission.json   required — must pass scripts/check_s
 submissions/<TEAM_NAME>/...               your code
 ```
 
-Submit by PR before **17:00 on event day**.
+Submit by PR before **code freeze, 16:30 on event day**.
