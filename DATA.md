@@ -9,7 +9,7 @@ metadata.
 ```
 data/
   track_a/
-    claims.json               the claim sheets you must verdict (eval scenes)
+    claims.json               the claim sheets you must verdict (24 of the 48 scenes)
     scenes.json               scene index: site, scene id, panorama files
     panoramas/<site>/<scene>/color.png     (from image packs, 4096x2048)
   track_b/
@@ -28,7 +28,8 @@ data/
   school buildings, a fitted-out office and renovation work.
 - `claims.json` entries: `claimId`, `sceneId`, `statement`, `category`.
   Statements are about **completion state** (plastered / installed / staged /
-  poured), authored for this event. Roughly one in three is false.
+  poured), authored for this event. Roughly half are false, and a few are
+  deliberately unanswerable from the panorama — honesty is scored.
 - Multiple scenes per site; a scene = one scan position = one panorama.
 
 ## Track B — ConSLAM zones
@@ -36,7 +37,7 @@ data/
 - One London residential project, four walkthroughs: **2022-04-26, 06-09,
   06-29, 08-03** (sequences 2–5). Perspective frames, 2064×1544, machine-vision
   color (dark; normalize before feeding a model).
-- **5 zones** with full four-visit coverage, up to 40 frames per zone per
+- **3 zones** with full four-visit coverage, up to 40 frames per zone per
   visit, selected by registered pose (all visits share one coordinate frame).
 - `tasks.json` entries: `taskId`, `zone`, `fromVisit`, `toVisit`, and the
   frame lists for both visits.

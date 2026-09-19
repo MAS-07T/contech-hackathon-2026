@@ -19,7 +19,8 @@ Every team competes in both. One tool or two is your call.
 
 Real indoor construction scenes from **8 German construction sites** — 360°
 panoramas rendered from terrestrial laser scans, from bare shell to fitted-out.
-Each eval scene comes with a **claim sheet**: statements a contractor might
+Half the scenes carry a **claim sheet** (`data/track_a/claims.json`; the
+rest are context): statements a contractor might
 file ("internal walls in this room are fully plastered", "windows installed
 throughout", "MEP rough-in complete on the ceiling"). Some are true. Some are
 not. For each claim your tool answers:
@@ -29,7 +30,7 @@ not. For each claim your tool answers:
 ### Track B — What changed here? (ConSLAM)
 
 One real London residential project, **walked four times between April and
-August 2022** — the same five zones photographed on every visit, with poses.
+August 2022** — the same three zones photographed on every visit, with poses.
 For each zone and consecutive visit pair, your tool reports **what work
 happened** between the visits, as structured changes (facade, partitions,
 MEP/services, finishes, materials & logistics, structure), each backed by
