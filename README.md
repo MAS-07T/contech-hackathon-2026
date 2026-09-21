@@ -30,7 +30,7 @@ not. For each claim your tool answers:
 ### Track B — What changed here? (ConSLAM)
 
 One real London residential project, **walked four times between April and
-August 2022** — the same three zones photographed on every visit, with poses.
+August 2022** — the same two zones photographed across the visits, with poses.
 For each zone and consecutive visit pair, your tool reports **what work
 happened** between the visits, as structured changes (facade, partitions,
 MEP/services, finishes, materials & logistics, structure), each backed by

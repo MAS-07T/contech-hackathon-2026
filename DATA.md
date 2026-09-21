@@ -37,8 +37,10 @@ data/
 - One London residential project, four walkthroughs: **2022-04-26, 06-09,
   06-29, 08-03** (sequences 2–5). Perspective frames, 2064×1544, machine-vision
   color (dark; normalize before feeding a model).
-- **3 zones** with full four-visit coverage, up to 40 frames per zone per
-  visit, selected by registered pose (all visits share one coordinate frame).
+- **2 zones** selected by registered pose (all visits share one coordinate
+  frame): a corridor zone with 60 frames per visit, and a second zone whose
+  tasks compare only visits with matching view directions — one task pair is
+  deliberately non-consecutive (Apr 26 → Jun 29).
 - `tasks.json` entries: `taskId`, `zone`, `fromVisit`, `toVisit`, and the
   frame lists for both visits.
 - `poses/` holds the 4×4 pose matrices (position in metres in the shared
