@@ -19,7 +19,7 @@ FOLDER_URL = "https://drive.google.com/drive/folders/1T3W9n0vRo1DmCBntxJqQdoW1US
 PACKS = {
     # name: (drive_file_id, expected_bytes)
     "track_a_panoramas.zip": ("1nJ0pQ_wEpZv2dES9bjdulMl_foirVqyR", 309880401),
-    "track_b_frames.zip": ("14HlJhqf6PMJStdn4gHo7FEzHW4pfMXv_", 1987560419),
+    "track_b_frames.zip": ("14HlJhqf6PMJStdn4gHo7FEzHW4pfMXv_", 1497337618),
 }
 ALLOWED_PREFIXES = ("track_a/", "track_b/")
 
