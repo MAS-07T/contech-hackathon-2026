@@ -11,9 +11,11 @@ Teams build AI tools that read real construction imagery and output an
 If the evidence isn't there, the tool says so. Guessing confidently is how
 you lose.
 
-## The two tracks
+## The challenge: Track A, then the bonus round
 
-Every team competes in both. One tool or two is your call.
+**Track A is the challenge. Everyone builds Track A.** Track B is a bonus round
+— attempt it only once Track A works, for extra points on top. A team that does
+Track A well and never touches Track B can still win.
 
 ### Track A — Verify the claim sheet (Rohbau3D)
 
@@ -27,22 +29,24 @@ not. For each claim your tool answers:
 
 `supported` · `refuted` · `no_evidence` — plus the panorama(s) that prove it.
 
-### Track B — What changed here? (ConSLAM)
+### Track B — What changed here? (ConSLAM) · bonus round
 
-One real London residential project, **walked four times between April and
-August 2022** — the same two zones photographed across the visits, with poses.
-For each zone and consecutive visit pair, your tool reports **what work
-happened** between the visits, as structured changes (facade, partitions,
-MEP/services, finishes, materials & logistics, structure), each backed by
-frames from *both* visits.
+**Optional stretch goal — only if you finish Track A.** One real London
+residential project, **walked four times between April and August 2022** — the
+same two zones photographed across the visits, with poses. For each zone and
+visit pair, your tool reports **what work happened** between the visits, as
+structured changes (facade, partitions, MEP/services, finishes, materials &
+logistics, structure), each backed by frames from *both* visits. Worth bonus
+points on top of your Track A score.
 
 ## The finale
 
-Judges pick a scene or a zone-pair and query your tool live: *"How done is
-this — prove it."* The authored answers go up on screen right after yours.
-Scoring is half objective (accuracy + citation validity against held-out
-answers), half panel (business impact, engineering mindset, clarity). Details
-in [SUBMISSION.md](SUBMISSION.md).
+Judges pick a scene — or, for teams that reached the bonus round, a zone-pair —
+and query your tool live: *"How done is this — prove it."* The authored answers
+go up on screen right after yours. Scoring is mostly objective (Track A accuracy
++ citation validity against held-out answers) plus a panel score (business
+impact, engineering mindset, clarity), with Track B as bonus. Details in
+[SUBMISSION.md](SUBMISSION.md).
 
 ## Get started
 

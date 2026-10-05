@@ -63,7 +63,9 @@ def main():
         E(f"track_a: no verdict for {len(missing)} claims "
           f"(e.g. {sorted(missing)[:3]})")
 
-    # ---- track B
+    # ---- track B (BONUS round — optional; only attempt after Track A is done).
+    # Whatever B entries are present must be well-formed, but leaving B empty
+    # is valid and never fails the check.
     tasks = {t["taskId"]: t for t in
              json.load(open(data / "track_b" / "tasks.json"))["tasks"]}
     seen = set()
@@ -99,17 +101,18 @@ def main():
                 for p in af:
                     if p not in after:
                         E(f"{w2}: {p!r} not in this task's after-frames")
-    missing = set(tasks) - seen
-    if missing:
-        E(f"track_b: no answer for tasks {sorted(missing)[:5]}")
+    # Track B is bonus — missing tasks are NOT an error.
 
     if errors:
         print(f"FAIL — {len(errors)} problem(s):")
         for e in errors[:50]:
             print(" -", e)
         sys.exit(1)
-    print(f"OK — team {sub['team']!r}: {len(claims)} claims, "
-          f"{len(tasks)} zone tasks answered. Ready to submit.")
+    b_done = len(seen)
+    b_note = (f"+ {b_done}/{len(tasks)} bonus zone tasks"
+              if b_done else "no bonus tasks yet (Track B optional)")
+    print(f"OK — team {sub['team']!r}: all {len(claims)} Track A claims "
+          f"answered, {b_note}. Ready to submit.")
 
 
 if __name__ == "__main__":

@@ -41,24 +41,29 @@ before the deadline — format errors cost build time, not judge sympathy.
 
 ## Rules
 
-**Track A** — one entry per claim in `data/track_a/claims.json`.
+**Track A (required)** — one entry per claim in `data/track_a/claims.json`.
 Verdicts: `supported` · `refuted` · `no_evidence`. Any verdict except
 `no_evidence` needs at least one cited panorama from that claim's scene.
 `rationale` is optional but helps the panel (and you, at the interrogation).
+The checker requires every Track A claim to be answered.
 
-**Track B** — one entry per task in `data/track_b/tasks.json`. Report every
-category you have a finding for; a category you omit counts as `no_change`.
-Every change except `no_change` needs evidence frames from **both** visits,
-drawn from that task's frame lists.
+**Track B (bonus — optional)** — attempt only after Track A works. Add one
+entry per task in `data/track_b/tasks.json` for the ones you reach; leaving
+`track_b` empty is fine and passes the checker. Report every category you have
+a finding for; a category you omit counts as `no_change`. Every change except
+`no_change` needs evidence frames from **both** visits, drawn from that task's
+frame lists.
 
 ## Scoring
 
+Core is 100 points; Track B adds bonus on top.
+
 | component | weight | how |
 |---|---|---|
-| Track A verdict accuracy | 25% | vs. the authored key |
-| Track B change detection | 25% | per-category F1 vs. the authored key |
-| Citation validity | 10% | cited files exist, belong to the scene/task; spot-checked live: does the image show what you say? |
-| Panel rubric | 40% | business impact · engineering mindset · clarity |
+| Track A verdict accuracy | 50 pts | vs. the authored key |
+| Citation validity | 10 pts | cited files exist, belong to the scene; spot-checked live: does the image show what you say? |
+| Panel rubric | 40 pts | business impact · engineering mindset · clarity |
+| **Track B change detection** | **+15 bonus** | per-category F1 vs. the authored key — only for teams who cleared Track A |
 
 Honesty is scored: a correct `no_evidence` earns full marks for that claim.
 A verdict with invalid citations scores zero even if the verdict is right.
