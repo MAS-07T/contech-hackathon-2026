@@ -71,6 +71,12 @@ Rules for each claim:
   blind spot / zenith hole, or too unclear to judge.
 - About half of all claims are false and a few are unanswerable. Do NOT default to "supported".
   Do not guess: an honest "no_evidence" beats a confident wrong answer.
+- Plaster vs bare surface: stains, damp patches or uneven colour do NOT mean a wall is unplastered.
+  Judge the surface itself: plaster is a continuous skin with no formwork marks; bare concrete shows
+  straight formwork panel seams in a grid, regular rows of tie holes, or blowholes; bare masonry shows
+  brick/block joints. Only refute plaster when you can see those bare-surface signs.
+- Services on walls: conduit or cable that comes down from the ceiling and runs onto a wall counts as
+  a "drop" on the wall. Check where each visible conduit goes before deciding.
 - Read each claim literally. "fully", "complete", "throughout" mean every visible part must satisfy
   it. If a claim has two parts (e.g. "fitted and wired"), both parts must be judged.
 
@@ -189,6 +195,8 @@ def main():
     ap.add_argument("--team", required=True)
     ap.add_argument("--scene", help="run one scene only, e.g. site_00/scene_00000")
     ap.add_argument("--force", action="store_true", help="re-ask the model, ignore cache")
+    ap.add_argument("--redo", nargs="*", default=[],
+                    help="re-ask the model for these scenes only; others come from cache")
     ap.add_argument("--workers", type=int, default=3)
     args = ap.parse_args()
 
@@ -203,7 +211,11 @@ def main():
 
     results = {}
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
-        futs = {pool.submit(process_scene, s, by_scene[s], scenes, args.force): s for s in todo}
+        bad = [s for s in args.redo if s not in by_scene]
+        if bad:
+            sys.exit(f"Unknown scene(s) in --redo: {bad}")
+        futs = {pool.submit(process_scene, s, by_scene[s], scenes,
+                            args.force or s in args.redo): s for s in todo}
         for fut in as_completed(futs):
             s = futs[fut]
             try:
@@ -229,6 +241,15 @@ def main():
         return
     out = ROOT / "submissions" / args.team / "submission.json"
     out.parent.mkdir(parents=True, exist_ok=True)
+    if out.exists():                         # keep the previous version and show what changed
+        prev_text = out.read_text(encoding="utf-8")
+        (WORK / "submission_prev.json").write_text(prev_text, encoding="utf-8")
+        prev = {e["claimId"]: e["verdict"] for e in json.loads(prev_text).get("track_a", [])}
+        changed = [(e["claimId"], prev.get(e["claimId"]), e["verdict"])
+                   for e in entries if prev.get(e["claimId"]) != e["verdict"]]
+        print(f"\nChanged vs previous submission: {len(changed)}")
+        for cid, old, new in changed:
+            print(f"  {cid}: {old} -> {new}")
     out.write_text(json.dumps({"team": args.team, "track_a": entries, "track_b": []}, indent=1),
                    encoding="utf-8")
     print(f"\nWrote {out}\nRunning official checker...")

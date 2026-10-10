@@ -4,7 +4,7 @@
   {
    "claimId": "A-0001",
    "verdict": "supported",
-   "rationale": "Framed glazed door and windows are fitted with frames, sashes and sills, still covered in JAKO-branded protective film.",
+   "rationale": "Framed window units and a glazed door with sashes and sills, covered in protective film, are installed in the front and left walls.",
    "evidence": [
     "site_00/scene_00000/color.png"
    ]
@@ -12,7 +12,7 @@
   {
    "claimId": "A-0002",
    "verdict": "refuted",
-   "rationale": "Walls are bare cast-in-place concrete. Formwork panel joints, tie marks and blotchy stains are visible everywhere, with no plaster coat.",
+   "rationale": "Left and right walls are bare cast concrete with straight vertical formwork panel seams and blowholes, so there is no continuous plaster skin.",
    "evidence": [
     "site_00/scene_00000/color.png"
    ]
@@ -20,7 +20,7 @@
   {
    "claimId": "A-0003",
    "verdict": "supported",
-   "rationale": "Several red-capped flush boxes are set into the concrete walls near floor level, with conduits running to them.",
+   "rationale": "Rows of red-capped socket boxes are set into the walls near the floor at the back-left corner, with more on the right walls.",
    "evidence": [
     "site_00/scene_00000/color.png"
    ]
@@ -28,7 +28,7 @@
   {
    "claimId": "A-0004",
    "verdict": "refuted",
-   "rationale": "Floor is a rough bare slab. Electrical conduits lie loose on its surface and would be buried if screed had been laid.",
+   "rationale": "Floor looks like a raw structural slab. Loose conduit stubs lie exposed at the wall base, which screed would normally cover.",
    "evidence": [
     "site_00/scene_00000/color.png"
    ]
@@ -36,7 +36,7 @@
   {
    "claimId": "A-0005",
    "verdict": "supported",
-   "rationale": "White window frames with sashes and sills, still covered in protective JAKO film, are fitted in the brick external wall.",
+   "rationale": "White window frames with sashes, sills and protective JAKO film are fitted in the brick external wall, front and right.",
    "evidence": [
     "site_00/scene_00006/color.png"
    ]
@@ -44,7 +44,7 @@
   {
    "claimId": "A-0006",
    "verdict": "refuted",
-   "rationale": "The external wall shows bare red clay blockwork around the windows with no internal plaster. Only the corner beads are fixed.",
+   "rationale": "The external wall is bare clay hollow brick with visible block joints around the windows. It has no plaster skin.",
    "evidence": [
     "site_00/scene_00006/color.png"
    ]
@@ -52,7 +52,7 @@
   {
    "claimId": "A-0007",
    "verdict": "refuted",
-   "rationale": "The bare concrete slab ceiling is clearly visible throughout, with only small holes. There is no ventilation ductwork anywhere.",
+   "rationale": "The concrete slab ceiling is clearly visible and unobstructed. It shows only small holes and no ductwork anywhere.",
    "evidence": [
     "site_00/scene_00006/color.png"
    ]
@@ -83,8 +83,8 @@
   },
   {
    "claimId": "A-0011",
-   "verdict": "refuted",
-   "rationale": "Walls clearly visible: bare brick and concrete with flush socket boxes. Red pipe stubs with brass fittings look like plumbing. No surface conduit drops seen.",
+   "verdict": "supported",
+   "rationale": "Red flexible conduits run up the brick walls to socket boxes beside the patio door and below the windows.",
    "evidence": [
     "site_00/scene_00018/color.png"
    ]
@@ -92,7 +92,7 @@
   {
    "claimId": "A-0012",
    "verdict": "refuted",
-   "rationale": "Ceiling is clearly visible bare concrete slab with panel joints and no suspended grid, hangers or tiles anywhere.",
+   "rationale": "The bare precast concrete slab ceiling is clearly visible throughout, with panel joints showing. There is no suspended grid or hangers.",
    "evidence": [
     "site_00/scene_00018/color.png"
    ]
@@ -100,7 +100,7 @@
   {
    "claimId": "A-0013",
    "verdict": "refuted",
-   "rationale": "Right and front walls look plastered, but the left walls are bare formed concrete and the back corner pier is unplastered.",
+   "rationale": "Left corridor and door walls are bare concrete with vertical formwork panel seams; only the window walls on the right look plastered.",
    "evidence": [
     "site_00/scene_00024/color.png"
    ]
@@ -108,7 +108,7 @@
   {
    "claimId": "A-0014",
    "verdict": "refuted",
-   "rationale": "The floor is bare, dusty screed/concrete with debris on it. There are no tiles or parquet anywhere in view.",
+   "rationale": "The floor is bare, dusty screed or concrete with debris on it. No tiles or parquet anywhere in view.",
    "evidence": [
     "site_00/scene_00024/color.png"
    ]
@@ -116,7 +116,7 @@
   {
    "claimId": "A-0015",
    "verdict": "refuted",
-   "rationale": "The wall under every window is clearly visible and bare. Only pipe stubs come out at floor level; no radiators are mounted.",
+   "rationale": "Walls below all the windows are clearly visible and empty. No radiators are mounted, just pipe stubs near the floor.",
    "evidence": [
     "site_00/scene_00024/color.png"
    ]
@@ -147,16 +147,13 @@
   },
   {
    "claimId": "A-0019",
-   "verdict": "refuted",
-   "rationale": "Stair walls have rough grey speckled render with patchy marks and no paint finish visible; the ceiling above is bare concrete.",
-   "evidence": [
-    "site_01/scene_01000/color.png"
-   ]
+   "verdict": "no_evidence",
+   "rationale": "Stair walls have a continuous rendered skin with no block joints, so plastered. Uniform grey looks like raw render; paint cannot be confirmed."
   },
   {
    "claimId": "A-0020",
    "verdict": "refuted",
-   "rationale": "The whole stair flight and both side walls are clearly visible. No handrail, brackets or balustrade appear anywhere along the stair.",
+   "rationale": "Both stair walls are clearly visible along the flight. No handrail or brackets are fitted, only a thin line or shadow.",
    "evidence": [
     "site_01/scene_01000/color.png"
    ]
@@ -164,7 +161,7 @@
   {
    "claimId": "A-0021",
    "verdict": "supported",
-   "rationale": "Dark conduits run in cut chases in plastered/blockwork walls: column between front windows, beside right doorway, and left corridor wall.",
+   "rationale": "Black conduits run vertically in grooves cut into the walls to socket boxes. Visible beside the corridor doorway and on the hall wall coming down from the ceiling.",
    "evidence": [
     "site_01/scene_01003/color.png"
    ]
@@ -172,7 +169,7 @@
   {
    "claimId": "A-0022",
    "verdict": "supported",
-   "rationale": "Front room has framed window/door units with sashes and sills (glass dropped out); framed window visible at end of right corridor.",
+   "rationale": "Framed full-height doors with sashes in the far room and a framed window at the corridor end. Glass dropped out of the scan but the frames are there.",
    "evidence": [
     "site_01/scene_01003/color.png"
    ]
@@ -180,7 +177,7 @@
   {
    "claimId": "A-0023",
    "verdict": "supported",
-   "rationale": "Smooth, uniform screed surface across floors with blue perimeter edge strips at wall bases, typical of poured floating screed.",
+   "rationale": "Continuous smooth grey screed covers the floors in every room, with blue edge strips along the wall bases.",
    "evidence": [
     "site_01/scene_01003/color.png"
    ]
@@ -188,7 +185,7 @@
   {
    "claimId": "A-0024",
    "verdict": "supported",
-   "rationale": "Vertical and horizontal chases with dark conduit laid in them, plus back-box holes, on the bed wall, the pier between the windows and beside the door.",
+   "rationale": "Chases cut into walls, conduit running down from the ceiling and along the wall base; on the pier between the windows conduit sits in open chases.",
    "evidence": [
     "site_01/scene_01006/color.png"
    ]
@@ -196,7 +193,7 @@
   {
    "claimId": "A-0025",
    "verdict": "refuted",
-   "rationale": "The walls are plastered, but the chases are still open with the conduit exposed, so they have not been plastered over.",
+   "rationale": "The chases are still open with conduit exposed, e.g. the pier between the windows and the bed wall. No finish plaster covers them.",
    "evidence": [
     "site_01/scene_01006/color.png"
    ]
@@ -204,7 +201,7 @@
   {
    "claimId": "A-0026",
    "verdict": "refuted",
-   "rationale": "The floor is clearly visible and shows finished screed with blue edge strips. No underfloor heating pipes are visible anywhere.",
+   "rationale": "The floor is clearly visible as a continuous screed with edge strips. No underfloor heating pipework can be seen anywhere.",
    "evidence": [
     "site_01/scene_01006/color.png"
    ]
@@ -510,7 +507,7 @@
   {
    "claimId": "A-0065",
    "verdict": "refuted",
-   "rationale": "Ceiling is newly boarded, but only the joints and screw spots are filled; the board face is bare, so it has not been skim-plastered.",
+   "rationale": "Ceiling is boarded, but the joints are only taped and filled with screw spots showing. There is no continuous skim coat, so the plastering part is not done.",
    "evidence": [
     "site_09/scene_09000/color.png"
    ]
@@ -518,7 +515,7 @@
   {
    "claimId": "A-0066",
    "verdict": "supported",
-   "rationale": "Door casings and frames are wrapped in clear plastic film, held with blue and yellow tape, on several doorways.",
+   "rationale": "Door casings and the fanlight are wrapped in clear plastic film, held with blue and yellow tape, on all the doorways.",
    "evidence": [
     "site_09/scene_09000/color.png"
    ]
@@ -526,7 +523,7 @@
   {
    "claimId": "A-0067",
    "verdict": "refuted",
-   "rationale": "The walls show bare brick with old mortar all round the room; there is no new plaster coat.",
+   "rationale": "Walls show bare exposed brick with visible joints and patchy old mortar residue all around. No new plaster skin anywhere.",
    "evidence": [
     "site_09/scene_09000/color.png"
    ]
@@ -534,7 +531,7 @@
   {
    "claimId": "A-0068",
    "verdict": "supported",
-   "rationale": "Black corrugated cable conduits run down vertical wall chases to red back boxes on the brick walls.",
+   "rationale": "Black corrugated conduits come down from the ceiling into chases in the brick walls and end at red back boxes.",
    "evidence": [
     "site_09/scene_09000/color.png"
    ]
@@ -542,7 +539,7 @@
   {
    "claimId": "A-0069",
    "verdict": "supported",
-   "rationale": "Several round back-boxes with red caps are set into the bare brick walls, with conduit drops running to them on the right and left walls.",
+   "rationale": "Several back-boxes with red caps, mortared into the bare brick walls, fed by conduit drops from the ceiling on the right and left walls.",
    "evidence": [
     "site_09/scene_09018/color.png"
    ]
@@ -550,12 +547,12 @@
   {
    "claimId": "A-0070",
    "verdict": "no_evidence",
-   "rationale": "A white-framed window with sashes is visible on the front wall, but the scan cannot show whether it is a new replacement unit."
+   "rationale": "A narrow white-framed window with three panes is visible; glass dropped out. The frame alone cannot show whether the unit was replaced."
   },
   {
    "claimId": "A-0071",
    "verdict": "refuted",
-   "rationale": "The walls are bare brick and the conduits in the chases are still exposed; no plaster covers the chases on any visible wall.",
+   "rationale": "Brick joints show everywhere; conduits and chases remain exposed with no plaster skin on the right, left and back walls.",
    "evidence": [
     "site_09/scene_09018/color.png"
    ]
@@ -563,7 +560,7 @@
   {
    "claimId": "A-0072",
    "verdict": "supported",
-   "rationale": "Several recessed ceiling boxes with loose cable tails hanging down are visible across the concrete soffit.",
+   "rationale": "Several round recessed boxes cast into the concrete ceiling, each with loose cable tails hanging down.",
    "evidence": [
     "site_12/scene_12013/color.png"
    ]
@@ -571,7 +568,7 @@
   {
    "claimId": "A-0073",
    "verdict": "refuted",
-   "rationale": "Openings have no door leaf, frame or hinges. Left opening shows only rough timber boarding; right opening is open and bright.",
+   "rationale": "The door opening on the left and the opening on the right are empty frames. No hinged door leaf is visible.",
    "evidence": [
     "site_12/scene_12013/color.png"
    ]
@@ -579,7 +576,7 @@
   {
    "claimId": "A-0074",
    "verdict": "refuted",
-   "rationale": "Walls are bare blockwork with visible joints and raw concrete with formwork marks. No skim plaster anywhere.",
+   "rationale": "Walls are bare blockwork with visible joints and bare concrete with formwork panel seams and tie holes. No plaster skin.",
    "evidence": [
     "site_12/scene_12013/color.png"
    ]
@@ -587,7 +584,7 @@
   {
    "claimId": "A-0075",
    "verdict": "refuted",
-   "rationale": "Two open ceiling penetrations with rough exposed edges are clearly visible, not closed or made good.",
+   "rationale": "Two ceiling openings are still open, with rough patched edges and the void visible above. They are not closed or made good.",
    "evidence": [
     "site_12/scene_12013/color.png"
    ]
