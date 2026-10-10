@@ -28,6 +28,10 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 import verify as V
+try:
+    import trackb as TB
+except Exception:
+    TB = None
 
 ROOT = V.ROOT
 WORK = V.WORK
@@ -85,10 +89,41 @@ def state():
     counts = {}
     for e in answers.values():
         counts[e["verdict"]] = counts.get(e["verdict"], 0) + 1
-    return {"team": TEAM, "submissionExists": sub is not None,
+    return {"team": TEAM, "submissionExists": sub is not None, "trackB": trackb_state(sub),
             "submissionPath": f"submissions/{TEAM}/submission.json",
             "counts": counts, "answered": len(answers), "total": len(claims),
             "claims": out, "scenes": scene_info, "lastCheck": LAST_CHECK}
+
+
+def safe_tid(tid):
+    return re.sub(r"[^A-Za-z0-9_.-]", "_", tid)
+
+
+def trackb_state(sub):
+    """Track B tasks, submitted changes, and the frames the AI compared (with their timestamps)."""
+    tp = ROOT / "data" / "track_b" / "tasks.json"
+    if not tp.exists() or TB is None:
+        return {"available": False, "tasks": []}
+    submitted = {b["taskId"]: b for b in (sub or {}).get("track_b", []) or []}
+    out = []
+    for t in jload(tp)["tasks"]:
+        sid = safe_tid(t["taskId"])
+        frames = {}
+        for side, letter in (("before", "B"), ("after", "A")):
+            frames[side] = []
+            for i, rel in enumerate(TB.pick(t["frames"][side]), 1):
+                lab = f"{letter}{i}"
+                img = WORK / "track_b" / sid / f"{lab}.jpg"
+                frames[side].append({"label": lab, "path": rel, "img": f"/tb/{sid}/{lab}.jpg" if img.exists() else None})
+        ans_p = WORK / "track_b" / sid / "answer.json"
+        ans = jload(ans_p) if ans_p.exists() else None
+        out.append({"taskId": t["taskId"], "zone": t.get("zone"), "fromVisit": t.get("fromVisit"),
+                    "toVisit": t.get("toVisit"),
+                    "nBefore": len(t["frames"]["before"]), "nAfter": len(t["frames"]["after"]),
+                    "frames": frames,
+                    "submitted": submitted.get(t["taskId"]),
+                    "aiSeconds": ans.get("seconds") if ans else None})
+    return {"available": True, "tasks": out, "categories": TB.CATEGORIES}
 
 
 def run_checker():
@@ -136,6 +171,7 @@ def run_live(scene, claim_id=None):
 
 
 IMG_RE = re.compile(r"^/views/(site_\d+)/(scene_\d+)/([a-z_]+)\.jpg$")
+TB_RE = re.compile(r"^/tb/([A-Za-z0-9_.-]+)/([AB][1-9])\.jpg$")
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -164,6 +200,11 @@ class Handler(BaseHTTPRequestHandler):
             m = IMG_RE.match(p)
             if m and m.group(3) in VIEW_NAMES:
                 f = WORK / "views" / m.group(1) / m.group(2) / f"{m.group(3)}.jpg"
+                if f.is_file():
+                    return self.send(200, f.read_bytes(), "image/jpeg")
+            m = TB_RE.match(p)
+            if m and ".." not in m.group(1):
+                f = WORK / "track_b" / m.group(1) / f"{m.group(2)}.jpg"
                 if f.is_file():
                     return self.send(200, f.read_bytes(), "image/jpeg")
             return self.send(404, {"error": "not found"})
@@ -389,6 +430,31 @@ details td:first-child{color:var(--faint);white-space:nowrap}
 .vrow.supported{border-left-color:var(--sup)}.vrow.supported b{color:var(--sup)}
 .vrow.refuted{border-left-color:var(--ref)}.vrow.refuted b{color:var(--ref)}
 .vrow.no_evidence{border-left-color:#9aa3ad}.vrow.no_evidence b{color:var(--ne)}
+.tabs{display:flex;background:#2c3138;border-radius:10px;padding:3px;gap:3px}
+.tab{border:0;background:none;color:#c3c9cf;border-radius:8px;padding:6px 12px;font-size:.8em;font-weight:600}
+.tab.on{background:var(--orange);color:#fff}
+.tb-tasks{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-bottom:18px}
+.tb-task{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:left}
+.tb-task:hover{border-color:var(--orange)}.tb-task.on{border-color:var(--orange);box-shadow:0 0 0 2px var(--orange-soft)}
+.tb-task b{display:block}.tb-task small{color:var(--muted);display:block}
+.timeline{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;background:var(--char);color:#fff;border-radius:16px;padding:18px 22px;margin-bottom:16px}
+.timeline .v small{color:#aab2bb;display:block;font-size:.75em;letter-spacing:.08em;text-transform:uppercase}
+.timeline .v b{font-size:1.25em}.timeline .v span{display:block;color:#c3c9cf;font-size:.85em}
+.timeline .mid{text-align:center;color:var(--orange);font-weight:800}
+.timeline .mid span{display:block;color:#aab2bb;font-weight:500;font-size:.8em}
+.chg{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.chg h3{margin:0 0 4px;font-size:1.05em;display:flex;gap:8px;align-items:center}
+.dir{font:700 .75em ui-monospace,Consolas,monospace;padding:2px 8px;border-radius:6px;background:var(--sup-bg);color:var(--sup)}
+.dir.removed{background:var(--ref-bg);color:var(--ref)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.pair figure{margin:0}.pair img{width:100%;border-radius:8px;display:block;background:#111}
+.pair figcaption{font-size:.72em;color:var(--muted);margin-top:3px}
+.nochg{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 16px}
+.nochg span{font-size:.75em;border:1px dashed var(--line2);border-radius:999px;padding:2px 10px;color:var(--muted)}
+.strip{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.strip figure{margin:0}.strip img{width:100%;border-radius:6px;display:block;aspect-ratio:4/3;object-fit:cover;background:#111}
+.strip figcaption{font-size:.65em;color:var(--muted);text-align:center}
+.strip .cited img{outline:3px solid var(--orange);outline-offset:-3px}
 .hint{background:#fff8f3;border:1px solid #f6d3bd;border-radius:12px;padding:10px 14px;font-size:.85em;margin-bottom:16px;color:#5a3a26}
 .crumb{font-size:.8em;color:var(--muted)}
 .crumb button{border:0;background:none;color:var(--orange);padding:0;font-weight:600}
@@ -401,6 +467,7 @@ pre{margin:0;background:var(--char);color:#e9ecef;padding:14px 16px;white-space:
   <div class="hbar">
     <div class="brand"><div class="logo">PROVE IT<span>.</span></div><div class="tagline">Every progress claim checked against the site scan, with the image behind it</div></div>
     <div class="status" id="status"></div>
+    <span class="tabs"><button class="tab on" id="tabA">Track A · Claims</button><button class="tab" id="tabB">Track B · Changes over time</button></span>
     <button class="tgl" id="sbbtn" aria-expanded="false">☰ Sites</button>
     <button class="tgl" id="howbtn" aria-expanded="false">How it works ▾</button>
     <button class="tgl" id="pres" title="Larger text for the projector">Presentation size</button>
@@ -422,7 +489,7 @@ pre{margin:0;background:var(--char);color:#e9ecef;padding:14px 16px;white-space:
 </div>
 <div class="toast" id="toast"></div>
 <script>
-var S=null, SCENE=null, CLAIM=null, VIEW=null, BUSY=false;
+var S=null, SCENE=null, CLAIM=null, VIEW=null, BUSY=false, MODE='A', TASK=null;
 var LABEL={supported:'Supported',refuted:'Refuted',no_evidence:'No evidence'};
 var MEAN={supported:'the scan shows the claimed work',refuted:'the scan shows the work is not done',no_evidence:'the scan cannot settle it either way'};
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -435,7 +502,7 @@ function vOf(c){return c.submitted&&c.submitted.verdict;}
 function load(keep){fetch('/api/state').then(function(r){return r.json();}).then(function(d){
   if(d.error)throw d.error;
   S=d;
-  status(); scenes(); if(SCENE===null)overview(); else report(keep); fit();
+  status(); scenes(); render(keep); fit();
 }).catch(function(e){document.getElementById('main').innerHTML='<div class="empty">Cannot load data: '+esc(e)+'<br>Is <code>python app.py</code> still running?</div>';});}
 
 function status(){
@@ -562,7 +629,55 @@ function report(keep){
   document.getElementById('back').onclick=goOverview;
   el.querySelectorAll('[data-tab]').forEach(function(b){b.onclick=function(){SCENE=b.dataset.tab;CLAIM=null;VIEW=null;scenes();report();document.querySelector('main').scrollTop=0;};});
 }
-function goOverview(){SCENE=null;CLAIM=null;VIEW=null;scenes();overview();document.querySelector('main').scrollTop=0;}
+function render(keep){if(MODE==='B')return trackB(); if(SCENE===null)overview(); else report(keep);}
+function setMode(m){MODE=m;document.getElementById('tabA').classList.toggle('on',m==='A');document.getElementById('tabB').classList.toggle('on',m==='B');document.getElementById('sbbtn').style.display=m==='A'?'':'none';if(m==='B')document.body.classList.add('nosb');render();document.querySelector('main').scrollTop=0;}
+function tsOf(path){var mt=String(path).match(/(\d{13,19})/);if(!mt)return null;var us=Number(mt[1].slice(0,16));return new Date(us/1000);}
+function fmtD(d){return d?d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'date unknown';}
+function fmtT(d){return d?d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',timeZone:'UTC'})+' UTC':'';}
+function fmtDT(d){return d?fmtD(d)+' · '+fmtT(d):'';}
+function trackB(){
+  var tb=S.trackB, el=document.getElementById('main'), h='';
+  if(!tb||!tb.available){el.innerHTML='<div class="empty">Track B data not found. Copy the frames into data/track_b and run <code>python trackb.py --team '+esc(S.team)+'</code>.</div>';return;}
+  if(!TASK&&tb.tasks.length)TASK=tb.tasks[0].taskId;
+  h+='<div class="ov-hero" style="padding:20px 26px"><h1 style="font-size:1.6em">What changed on site between two visits?</h1><p>One London residential project, walked on several dates. For each zone and pair of visits, the AI compares frames from both walks and reports only clear construction changes, each proven with a frame from each visit.</p></div>';
+  h+='<div class="tb-tasks">';
+  tb.tasks.forEach(function(t){
+    var d1=tsOf(t.frames.before[0]&&t.frames.before[0].path), d2=tsOf(t.frames.after[0]&&t.frames.after[0].path);
+    var days=(d1&&d2)?Math.round((d2-d1)/864e5):null, n=t.submitted?t.submitted.changes.length:null;
+    h+='<button class="tb-task'+(t.taskId===TASK?' on':'')+'" data-task="'+esc(t.taskId)+'"><b>Zone '+esc(t.zone)+'</b><small>'+esc(fmtD(d1))+' → '+esc(fmtD(d2))+(days!=null?' · '+days+' days':'')+'</small><small>'+(n==null?'not analysed yet':n+' change'+(n===1?'':'s')+' reported')+'</small></button>';
+  });
+  h+='</div>';
+  var t=tb.tasks.find(function(x){return x.taskId===TASK;});
+  if(t){
+    var b0=t.frames.before, a0=t.frames.after, d1=tsOf(b0[0]&&b0[0].path), d2=tsOf(a0[0]&&a0[0].path), days=(d1&&d2)?Math.round((d2-d1)/864e5):null;
+    h+='<div class="timeline"><div class="v"><small>Before · '+esc(t.fromVisit)+'</small><b>'+esc(fmtD(d1))+'</b><span>'+esc(fmtT(d1))+' · '+t.nBefore+' frames in zone '+esc(t.zone)+'</span></div>';
+    h+='<div class="mid">→'+(days!=null?'<span>'+days+' days</span>':'')+'</div>';
+    h+='<div class="v" style="text-align:right"><small>After · '+esc(t.toVisit)+'</small><b>'+esc(fmtD(d2))+'</b><span>'+esc(fmtT(d2))+' · '+t.nAfter+' frames in zone '+esc(t.zone)+'</span></div></div>';
+    var ch=t.submitted?t.submitted.changes:[], cats={};
+    ch.forEach(function(c){cats[c.category]=1;});
+    h+='<div class="ov-sec">Changes reported · task '+esc(t.taskId)+(t.aiSeconds!=null?' · AI took '+esc(t.aiSeconds)+' s':'')+'</div>';
+    if(!t.submitted)h+='<div class="hint">Not analysed yet. Run <code>python trackb.py --team '+esc(S.team)+'</code>.</div>';
+    else if(!ch.length)h+='<div class="hint">No clear changes reported. The AI only reports a change when it is visible in both visits; everything else counts as no_change.</div>';
+    ch.forEach(function(c){
+      var bf=c.evidence&&c.evidence.before||[], af=c.evidence&&c.evidence.after||[];
+      var bi=b0.find(function(f){return f.path===bf[0];}), ai=a0.find(function(f){return f.path===af[0];});
+      h+='<div class="chg"><h3>'+esc(c.category.replace('_',' '))+' <span class="dir '+esc(c.direction)+'">'+esc(c.direction)+'</span></h3><div class="c-why">'+esc(c.note||'')+'</div>';
+      h+='<div class="pair"><figure>'+(bi&&bi.img?'<img src="'+bi.img+'" alt="before">':'<div class="empty">frame image not cached</div>')+'<figcaption>BEFORE · '+esc(fmtDT(tsOf(bf[0])))+' · <code>'+esc(bf[0]||'')+'</code></figcaption></figure>';
+      h+='<figure>'+(ai&&ai.img?'<img src="'+ai.img+'" alt="after">':'<div class="empty">frame image not cached</div>')+'<figcaption>AFTER · '+esc(fmtDT(tsOf(af[0])))+' · <code>'+esc(af[0]||'')+'</code></figcaption></figure></div></div>';
+    });
+    if(tb.categories)h+='<div class="nochg">'+tb.categories.filter(function(c){return !cats[c];}).map(function(c){return '<span>'+esc(c.replace('_',' '))+': no change</span>';}).join('')+'</div>';
+    var cited={}; ch.forEach(function(c){(c.evidence.before||[]).concat(c.evidence.after||[]).forEach(function(x){cited[x]=1;});});
+    ['before','after'].forEach(function(side){
+      h+='<div class="ov-sec">'+(side==='before'?'Before':'After')+' visit · frames the AI compared (brightened)</div><div class="strip">';
+      t.frames[side].forEach(function(f){h+='<figure class="'+(cited[f.path]?'cited':'')+'">'+(f.img?'<img loading="lazy" src="'+f.img+'" alt="">':'<div class="empty" style="padding:20px">-</div>')+'<figcaption>'+esc(fmtT(tsOf(f.path)))+'</figcaption></figure>';});
+      h+='</div>';
+    });
+    h+='<p class="sitenote" style="margin-top:12px">Times come from each frame\'s file name (a microsecond timestamp). Orange outline = frame cited as evidence.</p>';
+  }
+  el.innerHTML=h;
+  el.querySelectorAll('.tb-task').forEach(function(b){b.onclick=function(){TASK=b.dataset.task;trackB();};});
+}
+function goOverview(){if(MODE!=='A'){setMode('A');}SCENE=null;CLAIM=null;VIEW=null;scenes();overview();document.querySelector('main').scrollTop=0;}
 
 function liveSummary(cs,lv){
   var n=0,m=0; cs.forEach(function(c){var l=lv.entries&&lv.entries[c.claimId];if(l){n++;if(l.verdict===vOf(c))m++;}});
@@ -581,6 +696,8 @@ function runCheck(){
   .catch(function(e){toast('Checker could not run: '+e);load(true);});
 }
 document.getElementById('q').oninput=scenes;
+document.getElementById('tabA').onclick=function(){setMode('A');};
+document.getElementById('tabB').onclick=function(){setMode('B');};
 document.getElementById('ovbtn').onclick=goOverview;
 document.getElementById('sbbtn').onclick=function(){var open=!document.body.classList.toggle('nosb');this.classList.toggle('on',open);this.setAttribute('aria-expanded',open);fit();};
 document.getElementById('howbtn').onclick=function(){var o=document.body.classList.toggle('howopen');this.classList.toggle('on',o);this.setAttribute('aria-expanded',o);this.textContent=o?'How it works ▴':'How it works ▾';fit();};

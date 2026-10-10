@@ -263,7 +263,13 @@ def main():
         print(f"\nChanged vs previous submission: {len(changed)}")
         for cid, old, new in changed:
             print(f"  {cid}: {old} -> {new}")
-    out.write_text(json.dumps({"team": args.team, "track_a": entries, "track_b": []}, indent=1),
+    track_b = []
+    if out.exists():                         # keep any Track B answers already in the file
+        try:
+            track_b = json.loads(out.read_text(encoding="utf-8")).get("track_b") or []
+        except Exception:
+            track_b = []
+    out.write_text(json.dumps({"team": args.team, "track_a": entries, "track_b": track_b}, indent=1),
                    encoding="utf-8")
     print(f"\nWrote {out}\nRunning official checker...")
     subprocess.run([sys.executable, str(ROOT / "scripts" / "check_submission.py"), str(out)])
