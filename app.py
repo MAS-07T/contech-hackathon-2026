@@ -226,14 +226,21 @@ header{background:var(--char);color:#fff}
 /* layout */
 .layout{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--hh,130px))}
 @media(max-width:960px){.layout{grid-template-columns:1fr;height:auto}}
-aside{background:#fbfaf8;border-right:1px solid var(--line);overflow:auto}
-.search{position:sticky;top:0;background:#fbfaf8;padding:14px;border-bottom:1px solid var(--line);z-index:1}
-.search input{width:100%;padding:9px 12px;border:1px solid var(--line2);border-radius:10px;background:#fff}
-.side-h{font-size:.7em;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);padding:14px 16px 6px}
-.scene{display:flex;width:100%;align-items:center;gap:10px;border:0;background:none;text-align:left;padding:10px 16px;border-bottom:1px solid var(--line)}
-.scene:hover{background:#f1efeb}
-.scene.sel{background:var(--orange-soft);box-shadow:inset 4px 0 var(--orange)}
-.scene .nm{flex:1}.scene .nm small{display:block;color:var(--faint);font-size:.75em}
+aside{background:#22262c;color:#e6e9ec;overflow:auto;border-right:1px solid #111}
+.search{position:sticky;top:0;background:#22262c;padding:14px;border-bottom:1px solid #343a42;z-index:1}
+.search input{width:100%;padding:9px 12px;border:1px solid #444b54;border-radius:10px;background:#2c3138;color:#fff}
+.search input::placeholder{color:#8d959e}
+.navbtn{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;color:#e6e9ec;text-align:left;padding:12px 16px;font-weight:600;border-bottom:1px solid #343a42}
+.navbtn:hover{background:#2c3138}.navbtn.sel{background:#33302c;box-shadow:inset 4px 0 var(--orange)}
+.site{border-bottom:1px solid #343a42}
+.site-h{display:flex;align-items:center;gap:8px;padding:12px 16px 6px;background:#1b1f24;position:sticky;top:61px;z-index:0}
+.site-h b{font-size:.78em;letter-spacing:.12em;text-transform:uppercase;color:var(--orange)}
+.site-h span{font-size:.72em;color:#8d959e;margin-left:auto}
+.scene{display:flex;width:100%;align-items:center;gap:10px;border:0;background:none;color:#e6e9ec;text-align:left;padding:9px 16px 9px 26px}
+.scene:hover{background:#2c3138}
+.scene.sel{background:#3a2a20;box-shadow:inset 4px 0 var(--orange)}
+.scene .nm{flex:1;font-size:.92em}.scene .nm small{display:block;color:#8d959e;font-size:.75em}
+.t-none{background:#555}
 .tally{display:flex;gap:3px}
 .tally i{width:9px;height:9px;border-radius:2px;display:block}
 .t-supported{background:var(--sup)}.t-refuted{background:var(--ref)}.t-no_evidence{background:#9aa3ad}.t-none{background:#ddd}
@@ -313,6 +320,36 @@ details table{border-collapse:collapse;margin-top:6px;width:100%}
 details td{padding:3px 6px;border-top:1px solid var(--line);vertical-align:top}
 details td:first-child{color:var(--faint);white-space:nowrap}
 
+/* overview */
+.ov-hero{background:var(--char);color:#fff;border-radius:18px;padding:28px 30px;margin-bottom:18px}
+.ov-hero h1{margin:0 0 8px;font-size:1.9em;letter-spacing:-.01em}
+.ov-hero p{margin:0;color:#c3c9cf;max-width:70ch}
+.ov-hero .btn{margin-top:18px}
+.ov-sec{font-size:.75em;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:22px 0 10px}
+.vcards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:900px){.vcards{grid-template-columns:1fr}}
+.vcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;border-top:5px solid}
+.vcard.supported{border-top-color:var(--sup)}.vcard.refuted{border-top-color:var(--ref)}.vcard.no_evidence{border-top-color:#9aa3ad}
+.vcard h3{margin:6px 0 4px;font-size:1.05em}
+.vcard p{margin:0;font-size:.86em;color:#3c434b}
+.vcard .eg{margin-top:8px;font-size:.8em;color:var(--muted);font-style:italic}
+.vcard .n{float:right;font-size:1.8em;font-weight:800;line-height:1}
+.vcard.supported .n{color:var(--sup)}.vcard.refuted .n{color:var(--ref)}.vcard.no_evidence .n{color:var(--ne)}
+.sitegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.sitecard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:left;cursor:pointer}
+.sitecard:hover{border-color:var(--orange)}
+.sitecard b{display:block;font-size:1.05em}
+.sitecard small{color:var(--muted)}
+.bar{display:flex;height:8px;border-radius:4px;overflow:hidden;margin-top:10px;background:#eee}
+.bar i{display:block;height:100%}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:900px){.facts{grid-template-columns:1fr 1fr}}
+.fact{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.fact b{display:block;font-size:1.6em}
+.fact span{font-size:.8em;color:var(--muted)}
+.hint{background:#fff8f3;border:1px solid #f6d3bd;border-radius:12px;padding:10px 14px;font-size:.85em;margin-bottom:16px;color:#5a3a26}
+.crumb{font-size:.8em;color:var(--muted)}
+.crumb button{border:0;background:none;color:var(--orange);padding:0;font-weight:600}
 .empty{padding:60px 20px;text-align:center;color:var(--muted)}
 .foot{margin-top:18px}
 pre{margin:0;background:var(--char);color:#e9ecef;padding:14px 16px;white-space:pre-wrap;font-size:.8em}
@@ -334,7 +371,7 @@ pre{margin:0;background:var(--char);color:#e9ecef;padding:14px 16px;white-space:
 <div class="layout">
   <aside>
     <div class="search"><input id="q" placeholder="Search claims or scenes" aria-label="Search claims or scenes"></div>
-    <div class="side-h">Scenes · pick one</div>
+    <button class="navbtn" id="ovbtn">Overview: start here</button>
     <div id="scenes"></div>
   </aside>
   <main><div class="wrap" id="main"><div class="empty">Loading real data from the project folder...</div></div></main>
@@ -353,8 +390,8 @@ function vOf(c){return c.submitted&&c.submitted.verdict;}
 
 function load(keep){fetch('/api/state').then(function(r){return r.json();}).then(function(d){
   if(d.error)throw d.error;
-  S=d; if(!SCENE)SCENE=Object.keys(S.scenes).sort()[0];
-  status(); scenes(); report(keep); fit();
+  S=d;
+  status(); scenes(); if(SCENE===null)overview(); else report(keep); fit();
 }).catch(function(e){document.getElementById('main').innerHTML='<div class="empty">Cannot load data: '+esc(e)+'<br>Is <code>python app.py</code> still running?</div>';});}
 
 function status(){
@@ -368,16 +405,48 @@ function status(){
   document.getElementById('chk').onclick=runCheck;
 }
 
+function sitesMap(){var m={};Object.keys(S.scenes).sort().forEach(function(s){var k=s.split('/')[0];(m[k]=m[k]||[]).push(s);});return m;}
+function siteName(k){return k.replace('site_','Site ');}
+function sceneName(s){return s.split('/')[1].replace('scene_','Scene ');}
 function scenes(){
-  var q=document.getElementById('q').value.toLowerCase(), h='';
-  Object.keys(S.scenes).sort().forEach(function(s){
-    var cs=claimsOf(s);
-    if(q&&!(s.toLowerCase().indexOf(q)>=0||cs.some(function(c){return (c.claimId+' '+c.statement).toLowerCase().indexOf(q)>=0;})))return;
-    var p=s.split('/');
-    h+='<button class="scene'+(s===SCENE?' sel':'')+'" data-s="'+s+'"><span class="nm">'+esc(p[1].replace('scene_','Scene '))+'<small>'+esc(p[0].replace('site_','Site '))+' · '+cs.length+' claims</small></span><span class="tally">'+cs.map(function(c){return '<i class="t-'+(vOf(c)||'none')+'" title="'+esc(c.claimId+': '+(vOf(c)||'-'))+'"></i>';}).join('')+'</span></button>';
+  var q=document.getElementById('q').value.toLowerCase(), h='', m=sitesMap();
+  document.getElementById('ovbtn').classList.toggle('sel',SCENE===null);
+  Object.keys(m).forEach(function(site){
+    var list=m[site].filter(function(s){var cs=claimsOf(s);return !q||s.toLowerCase().indexOf(q)>=0||cs.some(function(c){return (c.claimId+' '+c.statement).toLowerCase().indexOf(q)>=0;});});
+    if(!list.length)return;
+    var n=list.reduce(function(a,s){return a+claimsOf(s).length;},0);
+    h+='<div class="site"><div class="site-h"><b>'+esc(siteName(site))+'</b><span>'+list.length+' scene'+(list.length>1?'s':'')+' · '+n+' claims</span></div>';
+    list.forEach(function(s){var cs=claimsOf(s);
+      h+='<button class="scene'+(s===SCENE?' sel':'')+'" data-s="'+s+'"><span class="nm">'+esc(sceneName(s))+'<small>'+cs.length+' claims</small></span><span class="tally">'+cs.map(function(c){return '<i class="t-'+(vOf(c)||'none')+'" title="'+esc(c.claimId+': '+(vOf(c)||'-'))+'"></i>';}).join('')+'</span></button>';});
+    h+='</div>';
   });
-  var el=document.getElementById('scenes'); el.innerHTML=h||'<div class="empty">No match.</div>';
-  el.querySelectorAll('.scene').forEach(function(b){b.onclick=function(){SCENE=b.dataset.s;CLAIM=null;VIEW=null;scenes();report();};});
+  var el=document.getElementById('scenes'); el.innerHTML=h||'<div class="empty" style="color:#8d959e">No match.</div>';
+  el.querySelectorAll('.scene').forEach(function(b){b.onclick=function(){SCENE=b.dataset.s;CLAIM=null;VIEW=null;scenes();report();document.querySelector('main').scrollTop=0;};});
+}
+function openSite(site){var m=sitesMap();SCENE=m[site][0];CLAIM=null;VIEW=null;scenes();report();document.querySelector('main').scrollTop=0;}
+function overview(){
+  var c=S.counts, m=sitesMap(), nS=Object.keys(S.scenes).length, h='';
+  h+='<div class="ov-hero"><div class="crumb" style="color:#ffb183">Saudi ConTech Hackathon · Track A</div><h1>Is the contractor\'s progress claim true? Prove it.</h1>';
+  h+='<p>Contractors report progress like "walls fully plastered" or "windows installed". PROVE IT checks every claim against a 360° laser scan of the room and answers with one of three verdicts, the exact scan behind it, and a written reason. When the scan cannot tell, it says so instead of guessing.</p>';
+  h+='<button class="btn primary" id="start">Open the first scene</button></div>';
+  h+='<div class="facts"><div class="fact"><b>'+S.total+'</b><span>claims on the official sheet</span></div><div class="fact"><b>'+S.answered+'</b><span>answered in our submission</span></div><div class="fact"><b>'+Object.keys(m).length+' · '+nS+'</b><span>sites · scenes (one 360° scan each)</span></div><div class="fact"><b>'+(S.lastCheck.ran?(S.lastCheck.ok?'Passed':'Failed'):'Not run')+'</b><span>official submission checker</span></div></div>';
+  h+='<div class="ov-sec">The three possible answers · our results</div><div class="vcards">';
+  h+='<div class="vcard supported"><span class="n">'+(c.supported||0)+'</span><span class="badge supported">supported</span><h3>The work is visibly done</h3><p>The scan clearly shows what the claim describes.</p><div class="eg">e.g. window frames with sashes and sills are fitted</div></div>';
+  h+='<div class="vcard refuted"><span class="n">'+(c.refuted||0)+'</span><span class="badge refuted">refuted</span><h3>The scan shows it is NOT done</h3><p>The opposite is visible. Not seeing something only counts if that area is clearly in view.</p><div class="eg">e.g. bare concrete with formwork marks where plaster is claimed</div></div>';
+  h+='<div class="vcard no_evidence"><span class="n">'+(c.no_evidence||0)+'</span><span class="badge no_evidence">no_evidence</span><h3>The scan cannot tell</h3><p>Hidden, out of view, or not visible in a picture at all. This is not the same as false, and an honest answer scores points.</p><div class="eg">e.g. "sprinkler main is pressure-tested"</div></div>';
+  h+='</div>';
+  h+='<div class="ov-sec">Sites · click one to inspect its scenes</div><div class="sitegrid">';
+  Object.keys(m).forEach(function(site){
+    var cs=S.claims.filter(function(x){return x.sceneId.split('/')[0]===site;}), k={supported:0,refuted:0,no_evidence:0};
+    cs.forEach(function(x){if(k[vOf(x)]!=null)k[vOf(x)]++;});
+    var t=cs.length||1;
+    h+='<button class="sitecard" data-site="'+site+'"><b>'+esc(siteName(site))+'</b><small>'+m[site].length+' scene'+(m[site].length>1?'s':'')+' · '+cs.length+' claims · '+k.supported+' ✓ '+k.refuted+' ✗ '+k.no_evidence+' ?</small><div class="bar"><i style="width:'+(100*k.supported/t)+'%;background:var(--sup)"></i><i style="width:'+(100*k.refuted/t)+'%;background:var(--ref)"></i><i style="width:'+(100*k.no_evidence/t)+'%;background:#9aa3ad"></i></div></button>';
+  });
+  h+='</div>';
+  h+='<div class="ov-sec">How to read a scene page</div><div class="hint">Left: the scan views (orange dot = the view the AI cited for the selected claim; click to zoom). Right: every claim with its verdict, the reason, and the exact image file cited. <b>Re-run live</b> asks the AI again right now and compares with our submitted answer.</div>';
+  var el=document.getElementById('main'); el.innerHTML=h;
+  document.getElementById('start').onclick=function(){openSite(Object.keys(m)[0]);};
+  el.querySelectorAll('.sitecard').forEach(function(b){b.onclick=function(){openSite(b.dataset.site);};});
 }
 
 function report(keep){
@@ -386,11 +455,12 @@ function report(keep){
   var sel=cs.find(function(c){return c.claimId===CLAIM;}), cited=sel&&sel.model&&sel.model.views||[];
   if(!VIEW||!keep){VIEW=(cited.length&&sc.views.indexOf(cited[0])>=0)?cited[0]:(sc.views.indexOf('overview')>=0?'overview':sc.views[0]);}
   var p=SCENE.split('/'), h='';
-  h+='<div class="report-h"><div><div class="q">"How done is this? Prove it."</div><h1>'+esc(p[0].replace('site_','Site '))+' · '+esc(p[1].replace('scene_','Scene '))+'</h1></div>';
+  h+='<div class="report-h"><div><div class="crumb"><button id="back">Overview</button> / '+esc(siteName(p[0]))+' / '+esc(sceneName(SCENE))+'</div><div class="q">"How done is this? Prove it."</div><h1>'+esc(siteName(p[0]))+' · '+esc(sceneName(SCENE))+'</h1></div>';
   h+='<div class="act"><button class="btn primary" id="live"'+(BUSY?' disabled':'')+'>'+(BUSY?'<span class="spin"></span>Claude is checking this scene...':'Re-run live now')+'</button></div></div>';
   h+='<div class="summary">';
   ['supported','refuted','no_evidence'].forEach(function(v){h+='<div class="sum '+v+'"><b>'+cnt[v]+'</b><span>'+LABEL[v]+'</span><small>'+MEAN[v]+'</small></div>';});
   h+='</div>';
+  if(!CLAIM)h+='<div class="hint">Click any claim on the right: the viewer jumps to the scan view the AI used as proof (orange dot). Click the image to zoom in.</div>';
   if(sc.live)h+='<div class="live" style="margin:-6px 0 16px">Live re-run at '+esc(sc.live.at)+' ('+esc(sc.live.seconds)+' s): '+liveSummary(cs,sc.live)+'. Live runs never change the submitted file.</div>';
   h+='<div class="grid2">';
   // viewer
@@ -442,7 +512,9 @@ function report(keep){
   if(vw){var im=vw.querySelector('img');im.onclick=function(){vw.classList.toggle('zoom');};
     im.onerror=function(){vw.innerHTML='<div class="empty" style="color:#ccc">This image could not be loaded.</div>';};}
   document.getElementById('live').onclick=runLive;
+  document.getElementById('back').onclick=goOverview;
 }
+function goOverview(){SCENE=null;CLAIM=null;VIEW=null;scenes();overview();document.querySelector('main').scrollTop=0;}
 
 function liveSummary(cs,lv){
   var n=0,m=0; cs.forEach(function(c){var l=lv.entries&&lv.entries[c.claimId];if(l){n++;if(l.verdict===vOf(c))m++;}});
@@ -461,10 +533,12 @@ function runCheck(){
   .catch(function(e){toast('Checker could not run: '+e);load(true);});
 }
 document.getElementById('q').oninput=scenes;
+document.getElementById('ovbtn').onclick=goOverview;
 document.getElementById('pres').onclick=function(){document.body.classList.toggle('present');fit();};
 window.onresize=fit;
 load();
 </script></body></html>"""
+
 
 
 
