@@ -11,8 +11,8 @@
   },
   {
    "claimId": "A-0002",
-   "verdict": "refuted",
-   "rationale": "Left and right walls are bare cast concrete with straight vertical formwork panel seams and blowholes, so there is no continuous plaster skin.",
+   "verdict": "supported",
+   "rationale": "Human review override: Team inspected front/back views: walls carry a continuous plaster skin; staining is not bare concrete.",
    "evidence": [
     "site_00/scene_00000/color.png"
    ]

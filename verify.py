@@ -225,10 +225,23 @@ def main():
                 results[s] = {}
                 print(f"[FAIL]  {s}: {ex}  -> these claims fall back to no_evidence")
 
+    # Human review overrides (overrides.json in the repo root, optional):
+    #   {"A-0002": {"verdict": "supported", "rationale": "why the team decided this"}}
+    overrides = {}
+    ov_file = ROOT / "overrides.json"
+    if ov_file.exists():
+        overrides = json.loads(ov_file.read_text(encoding="utf-8"))
+        print(f"Applying {len(overrides)} human review override(s) from overrides.json")
+
     entries = []
     for s in todo:
         for c in by_scene[s]:
-            e = to_entry(c, results[s].get(c["claimId"]), scenes)
+            item = results[s].get(c["claimId"])
+            ov = overrides.get(c["claimId"])
+            if ov and ov.get("verdict") in VERDICTS:
+                item = {"verdict": ov["verdict"],
+                        "rationale": "Human review override: " + str(ov.get("rationale", ""))}
+            e = to_entry(c, item, scenes)
             entries.append(e)
             print(f"  {e['claimId']}  {e['verdict']:<12} {c['statement']}")
             print(f"            why: {e.get('rationale', '')}")
