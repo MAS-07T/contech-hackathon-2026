@@ -259,6 +259,13 @@ aside{background:#22262c;color:#e6e9ec;overflow:auto;border-right:1px solid #111
 .t-supported{background:var(--sup)}.t-refuted{background:var(--ref)}.t-no_evidence{background:#9aa3ad}.t-none{background:#ddd}
 
 main{overflow:auto;padding:24px 28px 60px}
+body.nosb .layout{grid-template-columns:1fr}
+body.nosb aside{display:none}
+.stabs{display:flex;flex-wrap:wrap;gap:6px;margin:-4px 0 16px}
+.stabs button{border:1px solid var(--line2);background:#fff;border-radius:999px;padding:4px 12px;font-size:.8em;display:flex;gap:6px;align-items:center}
+.stabs button:hover{border-color:var(--orange)}
+.stabs button.on{background:var(--char);color:#fff;border-color:var(--char)}
+.stabs .tally i{width:7px;height:7px}
 .wrap{max-width:1180px;margin:0 auto}
 
 /* scene report */
@@ -378,11 +385,12 @@ details td:first-child{color:var(--faint);white-space:nowrap}
 .foot{margin-top:18px}
 pre{margin:0;background:var(--char);color:#e9ecef;padding:14px 16px;white-space:pre-wrap;font-size:.8em}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--char);color:#fff;padding:10px 16px;border-radius:10px;font-size:.85em;display:none;z-index:10;max-width:90vw}
-</style></head><body>
+</style></head><body class="nosb">
 <header id="hdr">
   <div class="hbar">
     <div class="brand"><div class="logo">PROVE IT<span>.</span></div><div class="tagline">Every progress claim checked against the site scan, with the image behind it</div></div>
     <div class="status" id="status"></div>
+    <button class="tgl" id="sbbtn" aria-expanded="false">☰ Sites</button>
     <button class="tgl" id="howbtn" aria-expanded="false">How it works ▾</button>
     <button class="tgl" id="pres" title="Larger text for the projector">Presentation size</button>
   </div>
@@ -467,7 +475,7 @@ function overview(){
   h+='<div class="vcard refuted"><span class="n">'+(c.refuted||0)+'</span><span class="badge refuted">refuted</span><h3>The scan shows it is NOT done</h3><p>The opposite is visible. Not seeing something only counts if that area is clearly in view.</p><div class="eg">e.g. bare concrete with formwork marks where plaster is claimed</div></div>';
   h+='<div class="vcard no_evidence"><span class="n">'+(c.no_evidence||0)+'</span><span class="badge no_evidence">no_evidence</span><h3>The scan cannot tell</h3><p>Hidden, out of view, or not visible in a picture at all. This is not the same as false, and an honest answer scores points.</p><div class="eg">e.g. "sprinkler main is pressure-tested"</div></div>';
   h+='</div>';
-  h+='<div class="ov-sec">Sites · click one, or use the sidebar, to inspect its scenes</div>';
+  h+='<div class="ov-sec">Sites · click one to inspect its scenes</div>';
   h+='<p class="sitenote">The official claim sheet covers '+Object.keys(m).length+' sites: '+Object.keys(m).map(function(k){return k.replace('site_','');}).join(', ')+'. Dataset site numbers skip, so other numbers have no claims to check.</p><div class="sitegrid">';
   Object.keys(m).forEach(function(site){
     var cs=S.claims.filter(function(x){return x.sceneId.split('/')[0]===site;}), k={supported:0,refuted:0,no_evidence:0};
@@ -493,6 +501,8 @@ function report(keep){
   h+='<div class="summary">';
   ['supported','refuted','no_evidence'].forEach(function(v){h+='<div class="sum '+v+'"><b>'+cnt[v]+'</b><span>'+LABEL[v]+'</span><small>'+MEAN[v]+'</small></div>';});
   h+='</div>';
+  var sib=sitesMap()[p[0]];
+  if(sib.length>1)h+='<div class="stabs" aria-label="Scenes in this site">'+sib.map(function(x){var cs2=claimsOf(x);return '<button class="'+(x===SCENE?'on':'')+'" data-tab="'+x+'">'+esc(sceneName(x))+'<span class="tally">'+cs2.map(function(c){return '<i class="t-'+(vOf(c)||'none')+'"></i>';}).join('')+'</span></button>';}).join('')+'</div>';
   if(!CLAIM)h+='<div class="hint">Click any claim on the right: the viewer jumps to the scan view the AI used as proof (orange dot). Click the image to zoom in.</div>';
   if(sc.live)h+='<div class="live" style="margin:-6px 0 16px">Live re-run at '+esc(sc.live.at)+' ('+esc(sc.live.seconds)+' s): '+liveSummary(cs,sc.live)+'. Live runs never change the submitted file.</div>';
   h+='<div class="grid2">';
@@ -547,6 +557,7 @@ function report(keep){
   document.getElementById('live').onclick=function(){runLive(null);};
   el.querySelectorAll('.ask').forEach(function(b){b.onclick=function(ev){ev.stopPropagation();CLAIM=b.dataset.ask;runLive(b.dataset.ask);};});
   document.getElementById('back').onclick=goOverview;
+  el.querySelectorAll('[data-tab]').forEach(function(b){b.onclick=function(){SCENE=b.dataset.tab;CLAIM=null;VIEW=null;scenes();report();document.querySelector('main').scrollTop=0;};});
 }
 function goOverview(){SCENE=null;CLAIM=null;VIEW=null;scenes();overview();document.querySelector('main').scrollTop=0;}
 
@@ -568,6 +579,7 @@ function runCheck(){
 }
 document.getElementById('q').oninput=scenes;
 document.getElementById('ovbtn').onclick=goOverview;
+document.getElementById('sbbtn').onclick=function(){var open=!document.body.classList.toggle('nosb');this.classList.toggle('on',open);this.setAttribute('aria-expanded',open);fit();};
 document.getElementById('howbtn').onclick=function(){var o=document.body.classList.toggle('howopen');this.classList.toggle('on',o);this.setAttribute('aria-expanded',o);this.textContent=o?'How it works ▴':'How it works ▾';fit();};
 document.getElementById('pres').onclick=function(){document.body.classList.toggle('present');fit();};
 window.onresize=fit;
