@@ -103,10 +103,12 @@ def run_checker():
     return LAST_CHECK
 
 
-def run_live(scene):
+def run_live(scene, claim_id=None):
     """Fresh model call for one scene. Uses verify.py's own functions; never touches the submission."""
     claims, scenes = load_base()
-    sc = [c for c in claims if c["sceneId"] == scene]
+    sc = [c for c in claims if c["sceneId"] == scene and (claim_id is None or c["claimId"] == claim_id)]
+    if not sc:
+        raise ValueError("unknown claim for this scene")
     panos = scenes[scene].get("panoramas") or []
     path = V.pano_file(panos[0]) if panos else None
     if path is None:
@@ -120,10 +122,16 @@ def run_live(scene):
     reply = V.ask_claude(prompt)
     items = {i.get("claimId"): i for i in V.parse_reply(reply) if isinstance(i, dict)}
     entries = {c["claimId"]: V.to_entry(c, items.get(c["claimId"]), scenes) for c in sc}
-    rec = {"scene": scene, "at": time.strftime("%H:%M:%S"), "seconds": round(time.time() - t0, 1),
-           "items": items, "entries": entries}
+    now, secs = time.strftime("%H:%M:%S"), round(time.time() - t0, 1)
+    for e in entries.values():
+        e["at"], e["seconds"] = now, secs
+    live_p = WORK / "live" / cache_name(scene)
+    rec = jload(live_p) if live_p.exists() else {"scene": scene, "items": {}, "entries": {}}
+    rec["items"].update(items)                    # merge: one-claim checks keep earlier results
+    rec["entries"].update(entries)
+    rec["at"], rec["seconds"] = now, secs
     (WORK / "live").mkdir(parents=True, exist_ok=True)
-    (WORK / "live" / cache_name(scene)).write_text(json.dumps(rec, indent=1), encoding="utf-8")
+    live_p.write_text(json.dumps(rec, indent=1), encoding="utf-8")
     return rec
 
 
@@ -177,7 +185,10 @@ class Handler(BaseHTTPRequestHandler):
                 if not LIVE_LOCK.acquire(blocking=False):
                     return self.send(409, {"error": "a live run is already in progress"})
                 try:
-                    return self.send(200, run_live(scene))
+                    cid = body.get("claimId")
+                    if cid is not None and not isinstance(cid, str):
+                        return self.send(400, {"error": "bad claimId"})
+                    return self.send(200, run_live(scene, cid))
                 finally:
                     LIVE_LOCK.release()
             return self.send(404, {"error": "not found"})
@@ -217,11 +228,13 @@ header{background:var(--char);color:#fff}
 .tgl{background:none;border:1px solid #59606a;border-radius:8px;color:#fff;padding:5px 10px;font-size:.78em}
 
 /* how it works */
-.how{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#30353c;border-top:1px solid #30353c}
+.how{display:none;grid-template-columns:repeat(4,1fr);gap:1px;background:#30353c;border-top:1px solid #30353c}
 .how div{background:var(--char2);padding:12px 20px;font-size:.8em;color:#c3c9cf}
 .how b{display:block;color:#fff;font-size:1.05em;margin-bottom:2px}
 .how i{font-style:normal;color:var(--orange);font-weight:800;margin-right:6px}
+body.howopen .how{display:grid}
 @media(max-width:900px){.how{grid-template-columns:1fr 1fr}}
+.tgl.on{border-color:var(--orange);color:#ffb183}
 
 /* layout */
 .layout{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--hh,130px))}
@@ -347,6 +360,17 @@ details td:first-child{color:var(--faint);white-space:nowrap}
 .fact{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
 .fact b{display:block;font-size:1.6em}
 .fact span{font-size:.8em;color:var(--muted)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:1000px){.steps{grid-template-columns:1fr 1fr}}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;position:relative}
+.step .num{width:30px;height:30px;border-radius:9px;background:var(--orange);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.step b{display:block;font-size:1em}
+.step p{margin:4px 0 0;font-size:.84em;color:#3c434b}
+.sitenote{margin:-4px 0 12px;font-size:.82em;color:var(--muted)}
+.ask{border:1px solid var(--orange);background:#fff;color:var(--orange);border-radius:999px;padding:2px 11px;font-size:.74em;font-weight:600;margin-left:auto}
+.ask:hover{background:var(--orange);color:#fff}
+.ask:disabled{opacity:.6;cursor:wait}
+.spin.o{border-color:var(--orange);border-right-color:transparent}
 .hint{background:#fff8f3;border:1px solid #f6d3bd;border-radius:12px;padding:10px 14px;font-size:.85em;margin-bottom:16px;color:#5a3a26}
 .crumb{font-size:.8em;color:var(--muted)}
 .crumb button{border:0;background:none;color:var(--orange);padding:0;font-weight:600}
@@ -359,6 +383,7 @@ pre{margin:0;background:var(--char);color:#e9ecef;padding:14px 16px;white-space:
   <div class="hbar">
     <div class="brand"><div class="logo">PROVE IT<span>.</span></div><div class="tagline">Every progress claim checked against the site scan, with the image behind it</div></div>
     <div class="status" id="status"></div>
+    <button class="tgl" id="howbtn" aria-expanded="false">How it works ▾</button>
     <button class="tgl" id="pres" title="Larger text for the projector">Presentation size</button>
   </div>
   <div class="how">
@@ -371,7 +396,7 @@ pre{margin:0;background:var(--char);color:#e9ecef;padding:14px 16px;white-space:
 <div class="layout">
   <aside>
     <div class="search"><input id="q" placeholder="Search claims or scenes" aria-label="Search claims or scenes"></div>
-    <button class="navbtn" id="ovbtn">Overview: start here</button>
+    <button class="navbtn" id="ovbtn">⌂ Home</button>
     <div id="scenes"></div>
   </aside>
   <main><div class="wrap" id="main"><div class="empty">Loading real data from the project folder...</div></div></main>
@@ -430,12 +455,20 @@ function overview(){
   h+='<p>Contractors report progress like "walls fully plastered" or "windows installed". PROVE IT checks every claim against a 360° laser scan of the room and answers with one of three verdicts, the exact scan behind it, and a written reason. When the scan cannot tell, it says so instead of guessing.</p>';
   h+='<button class="btn primary" id="start">Open the first scene</button></div>';
   h+='<div class="facts"><div class="fact"><b>'+S.total+'</b><span>claims on the official sheet</span></div><div class="fact"><b>'+S.answered+'</b><span>answered in our submission</span></div><div class="fact"><b>'+Object.keys(m).length+' · '+nS+'</b><span>sites · scenes (one 360° scan each)</span></div><div class="fact"><b>'+(S.lastCheck.ran?(S.lastCheck.ok?'Passed':'Failed'):'Not run')+'</b><span>official submission checker</span></div></div>';
+  h+='<div class="ov-sec">How PROVE IT works</div><div class="steps">';
+  [['Read the claim','Load the official claim sheet: what the contractor says is finished in each room.'],
+   ['Look properly','Each 360° laser scan is cut into 8 normal views (4 walls, 2 ceiling, 2 floor) so small items are visible.'],
+   ['Judge with strict rules','Claude inspects every view. It refutes only on visible proof, and answers no_evidence when the scan cannot tell.'],
+   ['Prove it','Code attaches the exact scan file from the official scene list, rejects invalid answers, and runs the official checker.']
+  ].forEach(function(x,i){h+='<div class="step"><div class="num">'+(i+1)+'</div><b>'+x[0]+'</b><p>'+x[1]+'</p></div>';});
+  h+='</div>';
   h+='<div class="ov-sec">The three possible answers · our results</div><div class="vcards">';
   h+='<div class="vcard supported"><span class="n">'+(c.supported||0)+'</span><span class="badge supported">supported</span><h3>The work is visibly done</h3><p>The scan clearly shows what the claim describes.</p><div class="eg">e.g. window frames with sashes and sills are fitted</div></div>';
   h+='<div class="vcard refuted"><span class="n">'+(c.refuted||0)+'</span><span class="badge refuted">refuted</span><h3>The scan shows it is NOT done</h3><p>The opposite is visible. Not seeing something only counts if that area is clearly in view.</p><div class="eg">e.g. bare concrete with formwork marks where plaster is claimed</div></div>';
   h+='<div class="vcard no_evidence"><span class="n">'+(c.no_evidence||0)+'</span><span class="badge no_evidence">no_evidence</span><h3>The scan cannot tell</h3><p>Hidden, out of view, or not visible in a picture at all. This is not the same as false, and an honest answer scores points.</p><div class="eg">e.g. "sprinkler main is pressure-tested"</div></div>';
   h+='</div>';
-  h+='<div class="ov-sec">Sites · click one to inspect its scenes</div><div class="sitegrid">';
+  h+='<div class="ov-sec">Sites · click one, or use the sidebar, to inspect its scenes</div>';
+  h+='<p class="sitenote">The official claim sheet covers '+Object.keys(m).length+' sites: '+Object.keys(m).map(function(k){return k.replace('site_','');}).join(', ')+'. Dataset site numbers skip, so other numbers have no claims to check.</p><div class="sitegrid">';
   Object.keys(m).forEach(function(site){
     var cs=S.claims.filter(function(x){return x.sceneId.split('/')[0]===site;}), k={supported:0,refuted:0,no_evidence:0};
     cs.forEach(function(x){if(k[vOf(x)]!=null)k[vOf(x)]++;});
@@ -455,8 +488,8 @@ function report(keep){
   var sel=cs.find(function(c){return c.claimId===CLAIM;}), cited=sel&&sel.model&&sel.model.views||[];
   if(!VIEW||!keep){VIEW=(cited.length&&sc.views.indexOf(cited[0])>=0)?cited[0]:(sc.views.indexOf('overview')>=0?'overview':sc.views[0]);}
   var p=SCENE.split('/'), h='';
-  h+='<div class="report-h"><div><div class="crumb"><button id="back">Overview</button> / '+esc(siteName(p[0]))+' / '+esc(sceneName(SCENE))+'</div><div class="q">"How done is this? Prove it."</div><h1>'+esc(siteName(p[0]))+' · '+esc(sceneName(SCENE))+'</h1></div>';
-  h+='<div class="act"><button class="btn primary" id="live"'+(BUSY?' disabled':'')+'>'+(BUSY?'<span class="spin"></span>Claude is checking this scene...':'Re-run live now')+'</button></div></div>';
+  h+='<div class="report-h"><div><div class="crumb"><button id="back">Home</button> / '+esc(siteName(p[0]))+' / '+esc(sceneName(SCENE))+'</div><div class="q">"How done is this? Prove it."</div><h1>'+esc(siteName(p[0]))+' · '+esc(sceneName(SCENE))+'</h1></div>';
+  h+='<div class="act"><button class="btn primary" id="live"'+(BUSY?' disabled':'')+'>'+(BUSY==='scene'?'<span class="spin"></span>Claude is checking this scene...':'Re-run whole scene live')+'</button></div></div>';
   h+='<div class="summary">';
   ['supported','refuted','no_evidence'].forEach(function(v){h+='<div class="sum '+v+'"><b>'+cnt[v]+'</b><span>'+LABEL[v]+'</span><small>'+MEAN[v]+'</small></div>';});
   h+='</div>';
@@ -479,13 +512,13 @@ function report(keep){
   cs.forEach(function(c){
     var e=c.submitted||{}, v=e.verdict, m=c.model||{}, vs=m.views||[], ev=e.evidence||[], lv=sc.live&&sc.live.entries&&sc.live.entries[c.claimId];
     h+='<div class="claim'+(c.claimId===CLAIM?' sel':'')+'" data-c="'+c.claimId+'" tabindex="0">';
-    h+='<div class="c-top">'+badge(v)+'<span class="mono">'+esc(c.claimId)+'</span><span>'+esc(c.category.replace('_',' '))+'</span></div>';
+    h+='<div class="c-top">'+badge(v)+'<span class="mono">'+esc(c.claimId)+'</span><span>'+esc(c.category.replace('_',' '))+'</span><button class="ask" data-ask="'+c.claimId+'"'+(BUSY?' disabled':'')+'>'+(BUSY===c.claimId?'<span class="spin o"></span>checking...':'Ask AI to re-check')+'</button></div>';
     h+='<div class="c-st">'+esc(c.statement)+'</div>';
     h+='<div class="c-why">'+esc(e.rationale||'')+'</div>';
     h+='<div class="c-src'+(c.override?' human':'')+'">'+(c.override?'Human review override - team inspected the images':'AI rationale (Claude) - an interpretation of the scan, not ground truth')+'</div>';
     h+='<div class="chips">'+vs.map(function(n){return '<button class="vchip" data-v="'+esc(n)+'" data-c="'+c.claimId+'">view: '+esc(n.replace('_',' '))+'</button>';}).join('');
     h+='<span class="ev">'+(ev.length?'Evidence: '+ev.map(function(x){return '<code>'+esc(x)+'</code><button class="copy" data-copy="'+esc(x)+'" title="Copy path">copy</button>';}).join(' '):'No image cited - allowed for no_evidence')+'</span></div>';
-    if(lv)h+='<div class="live">Live re-run: '+badge(lv.verdict)+' '+(lv.verdict===v?'<span class="m">matches submission</span>':'<span class="d">differs from submission</span>')+'<div style="margin-top:3px;color:var(--muted)">'+esc(lv.rationale)+'</div></div>';
+    if(lv)h+='<div class="live">Live AI check'+(lv.at?' at '+esc(lv.at):'')+': '+badge(lv.verdict)+' '+(lv.verdict===v?'<span class="m">agrees with submission</span>':'<span class="d">differs from submission</span>')+'<div style="margin-top:3px;color:var(--muted)">'+esc(lv.rationale)+'</div></div>';
     h+='<details><summary>Trace this answer</summary><table>';
     h+='<tr><td>Claim ID</td><td class="mono">'+esc(c.claimId)+'</td></tr><tr><td>Scene ID</td><td class="mono">'+esc(c.sceneId)+'</td></tr>';
     h+='<tr><td>Panorama (scenes.json)</td><td class="mono">'+esc(sc.panoramas.join(', '))+' - '+(sc.panoFound?'file found on disk':'FILE MISSING')+'</td></tr>';
@@ -511,7 +544,8 @@ function report(keep){
   var vw=document.getElementById('vw');
   if(vw){var im=vw.querySelector('img');im.onclick=function(){vw.classList.toggle('zoom');};
     im.onerror=function(){vw.innerHTML='<div class="empty" style="color:#ccc">This image could not be loaded.</div>';};}
-  document.getElementById('live').onclick=runLive;
+  document.getElementById('live').onclick=function(){runLive(null);};
+  el.querySelectorAll('.ask').forEach(function(b){b.onclick=function(ev){ev.stopPropagation();CLAIM=b.dataset.ask;runLive(b.dataset.ask);};});
   document.getElementById('back').onclick=goOverview;
 }
 function goOverview(){SCENE=null;CLAIM=null;VIEW=null;scenes();overview();document.querySelector('main').scrollTop=0;}
@@ -520,11 +554,11 @@ function liveSummary(cs,lv){
   var n=0,m=0; cs.forEach(function(c){var l=lv.entries&&lv.entries[c.claimId];if(l){n++;if(l.verdict===vOf(c))m++;}});
   return '<b>'+m+' of '+n+'</b> verdicts match the submission';
 }
-function runLive(){
-  if(BUSY)return; BUSY=true; report(true); var s=SCENE;
-  fetch('/api/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scene:s})})
+function runLive(cid){
+  if(BUSY)return; BUSY=cid||'scene'; report(true); var s=SCENE;
+  fetch('/api/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cid?{scene:s,claimId:cid}:{scene:s})})
   .then(function(r){return r.json().then(function(d){return {ok:r.ok,d:d};});})
-  .then(function(x){BUSY=false;if(!x.ok){toast('Live run failed: '+(x.d.error||'unknown')+'. Submitted verdicts unchanged.');report(true);return;}toast('Live re-run finished for '+s);load(true);})
+  .then(function(x){BUSY=false;if(!x.ok){toast('Live run failed: '+(x.d.error||'unknown')+'. Submitted verdicts unchanged.');report(true);return;}toast(cid?'AI re-checked '+cid:'Live re-run finished for '+s);load(true);})
   .catch(function(e){BUSY=false;toast('Live run failed: '+e);report(true);});
 }
 function runCheck(){
@@ -534,10 +568,14 @@ function runCheck(){
 }
 document.getElementById('q').oninput=scenes;
 document.getElementById('ovbtn').onclick=goOverview;
+document.getElementById('howbtn').onclick=function(){var o=document.body.classList.toggle('howopen');this.classList.toggle('on',o);this.setAttribute('aria-expanded',o);this.textContent=o?'How it works ▴':'How it works ▾';fit();};
 document.getElementById('pres').onclick=function(){document.body.classList.toggle('present');fit();};
 window.onresize=fit;
 load();
 </script></body></html>"""
+
+
+
 
 
 
