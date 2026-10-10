@@ -341,8 +341,8 @@ details td{padding:3px 6px;border-top:1px solid var(--line);vertical-align:top}
 details td:first-child{color:var(--faint);white-space:nowrap}
 
 /* overview */
-.ov-hero{background:var(--char);color:#fff;border-radius:18px;padding:28px 30px;margin-bottom:18px}
-.ov-hero h1{margin:0 0 8px;font-size:1.9em;letter-spacing:-.01em}
+.ov-hero{background:var(--char);color:#fff;border-radius:18px;padding:26px 30px;margin-bottom:16px}
+.ov-hero h1{margin:0 0 6px;font-size:2.2em;letter-spacing:-.01em}
 .ov-hero p{margin:0;color:#c3c9cf;max-width:70ch}
 .ov-hero .btn{margin-top:18px}
 .ov-sec{font-size:.75em;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:22px 0 10px}
@@ -378,6 +378,17 @@ details td:first-child{color:var(--faint);white-space:nowrap}
 .ask:hover{background:var(--orange);color:#fff}
 .ask:disabled{opacity:.6;cursor:wait}
 .spin.o{border-color:var(--orange);border-right-color:transparent}
+.ov-stats{margin-top:12px;font-size:.85em;color:#aab2bb}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 18px;font-size:.88em;color:var(--muted)}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--ink)}
+.flow i{font-style:normal;color:var(--orange);font-weight:700}
+.vrows{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:800px){.vrows{grid-template-columns:1fr}}
+.vrow{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-left:5px solid;border-radius:12px;padding:12px 14px;font-size:.9em}
+.vrow b{font-size:1.6em;line-height:1;min-width:1.6em}
+.vrow.supported{border-left-color:var(--sup)}.vrow.supported b{color:var(--sup)}
+.vrow.refuted{border-left-color:var(--ref)}.vrow.refuted b{color:var(--ref)}
+.vrow.no_evidence{border-left-color:#9aa3ad}.vrow.no_evidence b{color:var(--ne)}
 .hint{background:#fff8f3;border:1px solid #f6d3bd;border-radius:12px;padding:10px 14px;font-size:.85em;margin-bottom:16px;color:#5a3a26}
 .crumb{font-size:.8em;color:var(--muted)}
 .crumb button{border:0;background:none;color:var(--orange);padding:0;font-weight:600}
@@ -458,37 +469,29 @@ function scenes(){
 }
 function openSite(site){var m=sitesMap();SCENE=m[site][0];CLAIM=null;VIEW=null;scenes();report();document.querySelector('main').scrollTop=0;}
 function overview(){
-  var c=S.counts, m=sitesMap(), nS=Object.keys(S.scenes).length, h='';
-  h+='<div class="ov-hero"><div class="crumb" style="color:#ffb183">Saudi ConTech Hackathon · Track A</div><h1>Is the contractor\'s progress claim true? Prove it.</h1>';
-  h+='<p>Contractors report progress like "walls fully plastered" or "windows installed". PROVE IT checks every claim against a 360° laser scan of the room and answers with one of three verdicts, the exact scan behind it, and a written reason. When the scan cannot tell, it says so instead of guessing.</p>';
-  h+='<button class="btn primary" id="start">Open the first scene</button></div>';
-  h+='<div class="facts"><div class="fact"><b>'+S.total+'</b><span>claims on the official sheet</span></div><div class="fact"><b>'+S.answered+'</b><span>answered in our submission</span></div><div class="fact"><b>'+Object.keys(m).length+' · '+nS+'</b><span>sites · scenes (one 360° scan each)</span></div><div class="fact"><b>'+(S.lastCheck.ran?(S.lastCheck.ok?'Passed':'Failed'):'Not run')+'</b><span>official submission checker</span></div></div>';
-  h+='<div class="ov-sec">How PROVE IT works</div><div class="steps">';
-  [['Read the claim','Load the official claim sheet: what the contractor says is finished in each room.'],
-   ['Look properly','Each 360° laser scan is cut into 8 normal views (4 walls, 2 ceiling, 2 floor) so small items are visible.'],
-   ['Judge with strict rules','Claude inspects every view. It refutes only on visible proof, and answers no_evidence when the scan cannot tell.'],
-   ['Prove it','Code attaches the exact scan file from the official scene list, rejects invalid answers, and runs the official checker.']
-  ].forEach(function(x,i){h+='<div class="step"><div class="num">'+(i+1)+'</div><b>'+x[0]+'</b><p>'+x[1]+'</p></div>';});
+  var c=S.counts, m=sitesMap(), nS=Object.keys(S.scenes).length, ch=S.lastCheck, h='';
+  h+='<div class="ov-hero"><h1>Prove It<span style="color:var(--orange)">.</span></h1>';
+  h+='<p>Checks every contractor progress claim against the 360° site scan, and shows the scan behind each answer.</p>';
+  h+='<div class="ov-stats">'+S.total+' claims · '+S.answered+' answered · '+Object.keys(m).length+' sites · '+nS+' scenes · checker '+(ch.ran?(ch.ok?'passed':'failed'):'not run')+'</div>';
+  h+='<button class="btn primary" id="start">Open the first scene →</button></div>';
+  h+='<div class="flow"><span>Claim</span><i>→</i><span>8 views of the scan</span><i>→</i><span>Claude judges</span><i>→</i><span>Evidence checked</span></div>';
+  h+='<div class="vrows">';
+  [['supported','Visibly done'],['refuted','Visibly not done'],['no_evidence','Scan can\'t tell']].forEach(function(x){
+    h+='<div class="vrow '+x[0]+'"><b>'+(c[x[0]]||0)+'</b><span class="badge '+x[0]+'">'+x[0]+'</span><span>'+x[1]+'</span></div>';});
   h+='</div>';
-  h+='<div class="ov-sec">The three possible answers · our results</div><div class="vcards">';
-  h+='<div class="vcard supported"><span class="n">'+(c.supported||0)+'</span><span class="badge supported">supported</span><h3>The work is visibly done</h3><p>The scan clearly shows what the claim describes.</p><div class="eg">e.g. window frames with sashes and sills are fitted</div></div>';
-  h+='<div class="vcard refuted"><span class="n">'+(c.refuted||0)+'</span><span class="badge refuted">refuted</span><h3>The scan shows it is NOT done</h3><p>The opposite is visible. Not seeing something only counts if that area is clearly in view.</p><div class="eg">e.g. bare concrete with formwork marks where plaster is claimed</div></div>';
-  h+='<div class="vcard no_evidence"><span class="n">'+(c.no_evidence||0)+'</span><span class="badge no_evidence">no_evidence</span><h3>The scan cannot tell</h3><p>Hidden, out of view, or not visible in a picture at all. This is not the same as false, and an honest answer scores points.</p><div class="eg">e.g. "sprinkler main is pressure-tested"</div></div>';
-  h+='</div>';
-  h+='<div class="ov-sec">Sites · click one to inspect its scenes</div>';
-  h+='<p class="sitenote">The official claim sheet covers '+Object.keys(m).length+' sites: '+Object.keys(m).map(function(k){return k.replace('site_','');}).join(', ')+'. Dataset site numbers skip, so other numbers have no claims to check.</p><div class="sitegrid">';
+  h+='<div class="ov-sec">Sites</div><div class="sitegrid">';
   Object.keys(m).forEach(function(site){
     var cs=S.claims.filter(function(x){return x.sceneId.split('/')[0]===site;}), k={supported:0,refuted:0,no_evidence:0};
     cs.forEach(function(x){if(k[vOf(x)]!=null)k[vOf(x)]++;});
     var t=cs.length||1;
-    h+='<button class="sitecard" data-site="'+site+'"><b>'+esc(siteName(site))+'</b><small>'+m[site].length+' scene'+(m[site].length>1?'s':'')+' · '+cs.length+' claims · '+k.supported+' ✓ '+k.refuted+' ✗ '+k.no_evidence+' ?</small><div class="bar"><i style="width:'+(100*k.supported/t)+'%;background:var(--sup)"></i><i style="width:'+(100*k.refuted/t)+'%;background:var(--ref)"></i><i style="width:'+(100*k.no_evidence/t)+'%;background:#9aa3ad"></i></div></button>';
+    h+='<button class="sitecard" data-site="'+site+'"><b>'+esc(siteName(site))+'</b><small>'+m[site].length+' scene'+(m[site].length>1?'s':'')+' · '+cs.length+' claims</small><div class="bar"><i style="width:'+(100*k.supported/t)+'%;background:var(--sup)"></i><i style="width:'+(100*k.refuted/t)+'%;background:var(--ref)"></i><i style="width:'+(100*k.no_evidence/t)+'%;background:#9aa3ad"></i></div></button>';
   });
   h+='</div>';
-  h+='<div class="ov-sec">How to read a scene page</div><div class="hint">Left: the scan views (orange dot = the view the AI cited for the selected claim; click to zoom). Right: every claim with its verdict, the reason, and the exact image file cited. <b>Re-run live</b> asks the AI again right now and compares with our submitted answer.</div>';
   var el=document.getElementById('main'); el.innerHTML=h;
   document.getElementById('start').onclick=function(){openSite(Object.keys(m)[0]);};
   el.querySelectorAll('.sitecard').forEach(function(b){b.onclick=function(){openSite(b.dataset.site);};});
 }
+
 
 function report(keep){
   var sc=S.scenes[SCENE], cs=claimsOf(SCENE), cnt={supported:0,refuted:0,no_evidence:0};
