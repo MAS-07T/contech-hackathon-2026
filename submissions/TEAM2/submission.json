@@ -590,5 +590,108 @@
    ]
   }
  ],
- "track_b": []
+ "track_b": [
+  {
+   "taskId": "B-zone_corridor-2to3",
+   "changes": []
+  },
+  {
+   "taskId": "B-zone_corridor-3to4",
+   "changes": [
+    {
+     "category": "materials_logistics",
+     "direction": "added",
+     "note": "New pallets of Rockwool insulation and boxed materials stacked beside the glazing racks",
+     "evidence": {
+      "before": [
+       "sequence3/1654763789872977.png",
+       "sequence3/1654764269754684.png"
+      ],
+      "after": [
+       "sequence4/1656497686425918.png",
+       "sequence4/1656497691664372.png"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "taskId": "B-zone_corridor-4to5",
+   "changes": [
+    {
+     "category": "materials_logistics",
+     "direction": "removed",
+     "note": "Heras fencing, stacked crates, pallets and wrapped materials cleared; floor now mostly open apart from glazing racks",
+     "evidence": {
+      "before": [
+       "sequence4/1656497686425918.png",
+       "sequence4/1656497691664372.png",
+       "sequence4/1656498070690787.png"
+      ],
+      "after": [
+       "sequence5/1659518343065746.png",
+       "sequence5/1659518845759392.png"
+      ]
+     }
+    },
+    {
+     "category": "facade",
+     "direction": "progressed",
+     "note": "Protective foil on the facade piers and window film removed; the glazed doors and windows now look finished and clear",
+     "evidence": {
+      "before": [
+       "sequence4/1656497691664372.png",
+       "sequence4/1656498070690787.png"
+      ],
+      "after": [
+       "sequence5/1659518343065746.png",
+       "sequence5/1659518845759392.png"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "taskId": "B-zone_03-2to4",
+   "changes": []
+  },
+  {
+   "taskId": "B-zone_03-4to5",
+   "changes": [
+    {
+     "category": "materials_logistics",
+     "direction": "removed",
+     "note": "Stored pipes, pallets, boxes, bags and glazing trolleys cleared from the floor; the space is now empty",
+     "evidence": {
+      "before": [
+       "sequence4/1656498035291050.png",
+       "sequence4/1656498037009122.png",
+       "sequence4/1656498040345288.png",
+       "sequence4/1656498042059154.png"
+      ],
+      "after": [
+       "sequence5/1659518802990966.png",
+       "sequence5/1659518805418567.png",
+       "sequence5/1659518808047162.png"
+      ]
+     }
+    },
+    {
+     "category": "facade",
+     "direction": "progressed",
+     "note": "Foil membrane on the piers beside the windows has been covered with plain boarding",
+     "evidence": {
+      "before": [
+       "sequence4/1656498035291050.png",
+       "sequence4/1656498038727936.png"
+      ],
+      "after": [
+       "sequence5/1659518802990966.png",
+       "sequence5/1659518805418567.png"
+      ]
+     }
+    }
+   ]
+  }
+ ]
 }
